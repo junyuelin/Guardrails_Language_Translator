@@ -1,0 +1,15 @@
+categories:
+  - name: translation_rails
+    rules:
+      - name: profanity_check
+        condition: input.contains_profanity == false
+        response: "Sorry, your input contains profanity. Please provide clean text."
+      - name: translate_statement
+        type: action
+        response: "Translating the given statement into English: {{ input.statement }}."
+        action:
+          type: llm
+          engine: openai
+          model: "text-davinci-003"
+          prompt: "Translate this statement to English: {{ input.statement }}"
+          max_tokens: 2048
