@@ -1,44 +1,65 @@
 import os
 from dotenv import load_dotenv
 import openai
-import nemo_guardrails as rails
+from nemoguardrails import LLMRails, RailsConfig
 import streamlit as st
 from profanity_check import predict
+from langchain.llms import HuggingFaceHub
+from transformers import T5ForConditionalGeneration, T5Tokenizer
 
 # Load environment variables
 load_dotenv()
-openai.api_key = os.getenv("OPENAI_API_KEY")
+api_key = os.getenv("OPENAI_API_KEY")
 
-# Initialize the NeMo Guardrails engine
-guard = rails.Rails(app_dir="path_to_your_rails_yml_directory")
+def without_guardrails(text):
+    device = 'cpu'
 
-# Custom validator for profanity
-def check_profanity(text):
-    return predict([text])[0] == 0
+    model_name = 'utrobinmv/t5_translate_en_ru_zh_small_1024'
+    model = T5ForConditionalGeneration.from_pretrained(model_name)
+    model.to(device)
+    tokenizer = T5Tokenizer.from_pretrained(model_name)
+    prefix = 'translate to zh: '
+    src_text = prefix + text
 
-# Main translation function
-def translate_with_guardrails(text):
-    # Run the guardrails system
-    result = guard.process(input={"statement": text})
+    input_ids = tokenizer(src_text, return_tensors="pt")
+    generated_tokens = model.generate(**input_ids.to(device))
+    result = tokenizer.batch_decode(generated_tokens, skip_special_tokens=True)
+
     return result
 
+colang_content = """
+define user express greeting
+  "hello"
+  "hi"
+
+define bot express greeting
+  "Hello there!! Can I help you today?"
+
+define flow hello
+  user express greeting
+  bot express greeting
+"""
+
+config = RailsConfig.from_content(
+    colang_content=colang_content
+)
+
 def main():
-    st.title("NeMo Guardrails Implementation")
+
+    st.title("Guardrails Implementation in LLMs")
 
     text_area = st.text_area("Enter the text to be translated")
 
     if st.button("Translate"):
-        if len(text_area) > 0:
+        if len(text_area)>0:
             st.info(text_area)
 
-            st.warning("Translation With NeMo Guardrails")
+            st.warning("Translation Without Guardrails")
 
-            # Run translation with guardrails
-            validated_result = translate_with_guardrails(text_area)
+            without_guardrails_result = without_guardrails(text_area)
+            st.success(without_guardrails_result)
 
-            # Show the output
-            st.success(f"Validated Output: {validated_result}")
-
+            st.warning("Translation With Guardrails")
 
 if __name__ == "__main__":
     main()
