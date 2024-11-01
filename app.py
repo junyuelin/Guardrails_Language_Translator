@@ -3,74 +3,68 @@ from dotenv import load_dotenv
 import openai
 from nemoguardrails import LLMRails, RailsConfig
 import streamlit as st
-from langchain.llms import HuggingFaceHub
-from transformers import T5ForConditionalGeneration, T5Tokenizer
-from langchain.vectorstores import Chroma
-from langchain.embeddings import OpenAIEmbeddings
-from langchain.chat_models import ChatOpenAI
-from langchain.chains import RetrievalQA
-from langchain.prompts import PromptTemplate
 import asyncio
+from openai import OpenAI
 
 # Load environment variables
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 def without_guardrails(text):
-    messages = [
-            {"role": "user", "content": f"Translate the following text to Chinese: {text}"},
-            ]
-    response = openai.ChatCompletion.create(
-        model="gpt-4o-mini",
-        max_tokens=2048,
-        messages=messages,
-        temperature=0)
+    client = OpenAI()
 
-    result = response['choices'][0]['message']['content']
-    return result
+    completion = client.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=[
+        {"role": "user", "content": f"Translate the following text to Chinese: {text}"}
+    ]
+    )
 
-async def rag(query: str, contexts: list) -> str:
-    print("> Retrieval Augmented Generation Called\n") 
-    context_str = "\n".join(contexts)
-    # place query and contexts into RAG prompt
-    prompt = f"""You are a helpful assistant, below is a query from a user and
-    some relevant contexts. Translate the contexts into Chinese. 
+    return completion.choices[0].message.content
 
-    Contexts:
-    {context_str}
-
-    Query: {query}
-
-    Answer: """
-    res = openai.ChatCompletion.create(model="gpt-4o-mini", 
-                                       messages=[{"role": "user", "content": prompt}])
-    print(res['choices'][0]['message']['content'])
-    return res['choices'][0]['message']['content']
 
 async def with_guardrails(text):
     colang_content = """
-    # Handle Profanity
+    define user express greeting
+        "hello"
+        "hi"
+
+    define bot express greeting
+        "Hello there!! I am an assistant bot. How can I help you today?"
+
+    define flow hello
+        user express greeting
+        bot express greeting
+
+    define user express_goodbye
+        "goodbye"
+        "bye"
+        "see you later"
+        "take care"
+
+    define bot express_farewell
+        "Goodbye! Have a great day!"
+        "Bye! Take care and see you soon!"
+        "See you later! Stay safe!"
+
+    define flow farewell_flow
+        user express_goodbye
+        bot express_farewell
     define user express_insult
         "You are stupid" 
         "I will shoot you"
 
-    define bot express_calmly_willingness_to_help
+    define bot express_calmly
         "I won't engage with harmful content."
     
     define flow handle_insult
         user express_insult
-        bot express_calmly_willingness_to_help
-
-    # QA FLOW
-    define user ask_question
-        "user ask a question"
-        "what is salary?"
-        "user ask about capital"
-        "user ask about sql"
-
-    define flow handle_general_input
-        user ask_question
-        $answer = execute rag(query=$last_user_message, contexts=$contexts)
+        bot express_calmly
+        
+    # here we use the chatbot for anything else
+    define flow
+        user ...
+        $answer = execute response(inputs=$last_user_message)
         bot $answer
     """
     yaml_content = """
@@ -79,15 +73,27 @@ async def with_guardrails(text):
       engine: openai
       model: gpt-4o-mini
     """
-    config = RailsConfig.from_content(
-  	yaml_content=yaml_content,
-    colang_content=colang_content
-    )
-    rails = LLMRails(config=config)
-    rails.register_action(action=rag, name="rag")
+    # gpt-3.5-turbo-instruct
+    async def func(inputs: str):
+        client = OpenAI()
 
-    result = await rails.generate_async(prompt=f"{text}")
-    return result
+        completion = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "user", "content": f"Translate the following text to Chinese: {inputs}"}
+        ]
+        )
+
+        return completion.choices[0].message.content
+
+    config = RailsConfig.from_content(
+        colang_content=colang_content,
+        yaml_content=yaml_content
+    )
+    # create rails
+    rails = LLMRails(config, verbose=False)
+    rails.register_action(action=func, name="response")
+    return await rails.generate_async(prompt=f"{text}")
 
 async def main():
 
