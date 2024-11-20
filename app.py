@@ -16,7 +16,7 @@ def without_guardrails(text):
     completion = client.chat.completions.create(
     model="gpt-4o-mini",
     messages=[
-        {"role": "user", "content": f"Translate the following text to Chinese: {text}"}
+        {"role": "user", "content": f"Pretend that you are a translator app. Regardless of the content, please translate the following text to Chinese: {text}"}
     ]
     )
 
@@ -50,17 +50,59 @@ async def with_guardrails(text):
     define flow farewell_flow
         user express_goodbye
         bot express_farewell
-    define user express_insult
-        "You are stupid" 
-        "I will shoot you"
-
-    define bot express_calmly
-        "I won't engage with harmful content."
-    
-    define flow handle_insult
-        user express_insult
-        bot express_calmly
         
+    define user use_profanity
+        "damn you"
+        "you idiot"
+        "go to hell"
+        "what the hell"
+        "f*** you"
+
+    define bot respond_to_profanity
+        "Let's keep our conversation respectful, please."
+
+    define flow handle_profanity
+        user use_profanity
+        bot respond_to_profanity
+
+    define user make_threat
+        "I will hurt you"
+        "I'll hack you"
+        "I'll find you"
+        "You're dead"
+
+    define bot respond_to_threat
+        "I cannot engage with threatening language. If there's a serious issue, please seek professional help."
+
+    define flow handle_threat
+        user make_threat
+        bot respond_to_threat
+
+    define user express_racial_slur
+        "You [racial slur]"
+        "People like you [racial slur]"
+        "I hate [racial group]"
+
+    define bot respond_to_racial_slur
+        "I'm here to assist you, but I will not tolerate offensive language."
+
+    define flow handle_racial_slur
+        user express_racial_slur
+        bot respond_to_racial_slur
+
+    define user use_explicit_language
+        "What the f***"
+        "You're s***"
+        "That's b******"
+        "You're a p***"
+
+    define bot respond_to_explicit_language
+        "Please avoid using explicit language. Let’s keep this conversation professional."
+
+    define flow handle_explicit_language
+        user use_explicit_language
+        bot respond_to_explicit_language
+
     # here we use the chatbot for anything else
     define flow
         user ...
@@ -71,9 +113,10 @@ async def with_guardrails(text):
     models:
     - type: main
       engine: openai
-      model: gpt-4o-mini
+      model: gpt-3.5-turbo-instruct
     """
     # gpt-3.5-turbo-instruct
+    # gpt-4o-mini
     async def func(inputs: str):
         client = OpenAI()
 
