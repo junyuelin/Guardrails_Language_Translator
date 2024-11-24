@@ -1,0 +1,45 @@
+models:
+  - type: main
+    engine: openai
+    model: gpt-4o-mini
+
+instructions:
+  - type: general
+    content: |
+      Below is a configuration for a Translator App.
+      The app is designed to translate user inputs from English to Chinese.
+      The app will not translate messages containing offensive, profane, or inappropriate language.
+      If such content is detected, the app will inform the user that the input cannot be translated due to policy restrictions.
+
+sample_conversation: |
+  user "Can you translate 'Good morning' into Chinese?"
+    request translation for a polite phrase
+  bot respond with translation
+    "'Good morning' translates to '早上好' in Chinese."
+  user "Translate 'You are an idiot' into Chinese."
+    request translation for offensive phrase
+  bot block offensive translation
+    "I'm sorry, but I cannot translate offensive or inappropriate language."
+
+rails:
+  input:
+    flows:
+      - self check input
+
+prompts:
+  - task: self_check_input
+    content: |
+      Your task is to check if the user input below complies with the Translator App's policy for acceptable input.
+
+      Translator App's policy for user input:
+      - should not contain profane or offensive language
+      - should not contain hate speech or discriminatory language
+      - should not use abusive or threatening language
+      - should not include explicit content
+      - should not use slurs or inappropriate cultural references
+      - should not contain excessively garbled or meaningless text
+
+      User input: "{{ user_input }}"
+
+      Question: Should the user input be blocked (Yes or No)?
+      Answer:
