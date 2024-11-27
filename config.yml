@@ -16,6 +16,10 @@ sample_conversation: |
     request translation for a polite phrase
   bot respond with translation
     "'Good morning' translates to '早上好' in Chinese."
+  user "Can you translate 'Go home' into Chinese?"
+    request translation for a neutral phrase
+  bot respond with translation
+    "'Go home' translates to '回家' in Chinese."
   user "Translate 'You are an idiot' into Chinese."
     request translation for offensive phrase
   bot block offensive translation
@@ -25,6 +29,9 @@ rails:
   input:
     flows:
       - self check input
+  output:
+    flows:
+      - self check output
 
 prompts:
   - task: self_check_input
@@ -37,9 +44,24 @@ prompts:
       - should not use abusive or threatening language
       - should not include explicit content
       - should not use slurs or inappropriate cultural references
-      - should not contain excessively garbled or meaningless text
 
       User input: "{{ user_input }}"
 
       Question: Should the user input be blocked (Yes or No)?
+      Answer:
+
+  - task: self_check_output
+    content: |
+      Your task is to assess whether the company bot's response (translation) complies with the messaging policy.
+      
+      Translator App's policy for bot responses:
+      - should not contain profane or offensive language
+      - should not contain hate speech or discriminatory language
+      - should not use abusive or threatening language
+      - should not include explicit content
+      - should not use slurs or inappropriate cultural references
+        
+      Bot message (Chinese translation): "{{ bot_response }}"
+
+      Question: Should the bot's message be blocked (Yes or No)?
       Answer:
