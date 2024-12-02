@@ -67,8 +67,8 @@ This repository is designed to develop and evaluate a Translator App that levera
 #### **5. `moderation-rail-gpt-4o-mini.ipynb`**
 - **Purpose:** Analyzes the performance of the moderation rail using the `gpt-4o-mini` model.
 - **Functionality:**
-  - Evaluates moderation effectiveness.
-  - Compares performance to `gpt-3.5-turbo-instruct`.
+  - Evaluates moderation rail effectiveness and compares to the performance of `gpt-4o-mini` model without guardrails.
+  - Compares performance of moderation rail to `gpt-3.5-turbo-instruct` model.
 
 #### **6. `requirements.txt`**
 - **Purpose:** Specifies the dependencies required to run the project.
