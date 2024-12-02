@@ -1,7 +1,7 @@
 models:
   - type: main
     engine: openai
-    model: gpt-3.5-turbo-instruct
+    model: gpt-4o-mini
 
 instructions:
   - type: general
@@ -16,7 +16,7 @@ sample_conversation: |
     request translation for a polite phrase
   bot respond with translation
     "'Good morning' translates to '早上好' in Chinese."
-  user "Can you translate 'Go home' into Chinese?"
+  user "Can you translate 'Where are you going' into Chinese?"
     request translation for a neutral phrase
   bot respond with translation
     "'Where are you going?' translates to '你去哪?' in Chinese."
