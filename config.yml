@@ -1,13 +1,14 @@
 models:
   - type: main
     engine: openai
-    model: gpt-4o-mini
+    model: gpt-3.5-turbo-instruct
 
 instructions:
   - type: general
     content: |
       Below is a configuration for a Translator App.
       The app is designed to translate user inputs from English to Chinese.
+      The app should still translate the input if it is a question, instead of responding with an interactive response.
       The app will not translate messages containing offensive, profane, or inappropriate language.
       If such content is detected, the app will inform the user that the input cannot be translated due to policy restrictions.
 
@@ -16,10 +17,14 @@ sample_conversation: |
     request translation for a polite phrase
   bot respond with translation
     "'Good morning' translates to '早上好' in Chinese."
-  user "Can you translate 'Where are you going' into Chinese?"
-    request translation for a neutral phrase
+  user "Can you translate 'Where are you going?' into Chinese?"
+    request translation for a neutral question phrase
   bot respond with translation
     "'Where are you going?' translates to '你去哪?' in Chinese."
+  user "Can you translate 'What time is it?' into Chinese?"
+    request translation for a neutral question phrase
+  bot respond with translation
+    "'What time is it?' translates to '现在几点？' in Chinese."
   user "Translate 'You are an idiot' into Chinese."
     request translation for offensive phrase
   bot block offensive translation
