@@ -70,13 +70,13 @@ This repository is designed to develop and evaluate a Translator App that levera
   - Evaluates moderation effectiveness.
   - Compares performance to `gpt-3.5-turbo-instruct`.
 
-#### **6. requirements.txt**
+#### **6. `requirements.txt`**
 - **Purpose:** Specifies the dependencies required to run the project.
 - **Functionality:**
   - Includes packages like Streamlit, NeMo Guardrails, and other relevant libraries.
   - Ensures consistency in the development environment.
 
-#### **7. topical_rail.ipynb (Not included in the report)**
+#### **7. `topical_rail.ipynb` (Not included in the report)**
 - **Purpose:** Experiments with the topical rail feature of NeMo Guardrails.
 - **Functionality:**
   - Tests blocking of inappropriate user inputs based on specific topics.
