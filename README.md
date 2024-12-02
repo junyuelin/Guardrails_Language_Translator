@@ -65,6 +65,9 @@ This repository is designed to develop and evaluate a Translator App that levera
   - Compares performance to `gpt-4o-mini`.
 
 #### **5. `moderation-rail-gpt-4o-mini.ipynb`**
+- **Components:**
+  - `without_guardrails(text)`
+  - `with_guardrails(text)`
 - **Purpose:** Analyzes the performance of the moderation rail using the `gpt-4o-mini` model.
 - **Functionality:**
   - Evaluates moderation rail effectiveness and compares to the performance of `gpt-4o-mini` model without guardrails.
@@ -76,7 +79,7 @@ This repository is designed to develop and evaluate a Translator App that levera
   - Includes packages like Streamlit, NeMo Guardrails, and other relevant libraries.
   - Ensures consistency in the development environment.
 
-#### **7. `topical_rail.ipynb` (Not included in the report)**
+#### **7. `topical_rail.ipynb` (Not Included in the Report)**
 - **Purpose:** Experiments with the topical rail feature of NeMo Guardrails.
 - **Functionality:**
   - Tests blocking of inappropriate user inputs based on specific topics.
