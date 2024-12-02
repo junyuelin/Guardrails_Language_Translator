@@ -1,7 +1,7 @@
 models:
   - type: main
     engine: openai
-    model: gpt-4o-mini
+    model: gpt-3.5-turbo-instruct
 
 instructions:
   - type: general
@@ -19,7 +19,7 @@ sample_conversation: |
   user "Can you translate 'Go home' into Chinese?"
     request translation for a neutral phrase
   bot respond with translation
-    "'Go home' translates to '回家' in Chinese."
+    "'Where are you going?' translates to '你去哪?' in Chinese."
   user "Translate 'You are an idiot' into Chinese."
     request translation for offensive phrase
   bot block offensive translation
